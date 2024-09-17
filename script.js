@@ -1,7 +1,8 @@
 "use strict";
 
+const squares = document.querySelectorAll('.square');
 const checkClasses = function () {
-  [...document.querySelectorAll(".square")].forEach((square) => {
+  squares.forEach((square) => {
     if (
       square.classList.contains("point") &&
       square.classList.contains("player")
@@ -20,4 +21,19 @@ const checkClasses = function () {
     }
   });
 };
+const player = {
+    x: Math.trunc(Math.random() * 10),
+    y: Math.trunc(Math.random() * 10),
+    point: 0,
+    alive: true,
+    placePlayer: function() {
+        squares.forEach(square => {
+            square.classList.contains('player') ?  square.classList.remove('player') : '';
+        })
+        squares[this.y * 10 + (this.x)].classList.add("player");
+    }
+}
+console.log(3 || 'Jonas');
+player.placePlayer();
+console.log(player);
 checkClasses();
