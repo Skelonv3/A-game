@@ -15,3 +15,10 @@ item {
     border-radius: 50%;
     display: inline-block;
 }
+
+.label-points {
+    font-weight: bold;
+    font-size: 32px;
+    justify-content: center;
+    display: flex;
+}
