@@ -22,3 +22,22 @@ item {
     justify-content: center;
     display: flex;
 }
+.enemy {
+    background-color: red;
+}
+.player {
+    background-color: rgb(255, 217, 0);
+}
+.point {
+    background-color: green;
+}
+.player.point{
+    background-color: orange;
+}
+.label-game_over {
+    font-weight: bold;
+    font-size: 32px;
+    justify-content: center;
+    display: none;
+}
+
