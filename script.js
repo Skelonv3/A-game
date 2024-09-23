@@ -1,115 +1,109 @@
 "use strict";
 
-const squares = document.querySelectorAll(".square");
-const labelPoints = document.querySelector(".label-points");
-const labelGameOver = document.querySelector(".label-game_over");
-
-let length = 1;
-let turnsAfterScoringPoint = -1;
-const pointCoordinates = [];
-
-const pointScored = function () {
-  player.points++;
-  length++;
-  labelPoints.textContent = `Points: ${player.points}`;
-};
-const placePoint = function (squaresArray) {
-    pointCoordinates[0] = Math.trunc(Math.random() * 10);
-    pointCoordinates[1] = Math.trunc(Math.random() * 10);
-    console.log(pointCoordinates[0], pointCoordinates[1]);
-  squaresArray.forEach((square) => {
-    square.querySelector("item").classList.contains("point")
-      ? square.querySelector("item").classList.remove("point")
-      : "";
-  });
-  squares[pointCoordinates[1] * 10 + pointCoordinates[0]]
-    .querySelector("item")
-    .classList.add("point");
-};
-const move = function (e) {
-  for (let i = length - 1; i >= 0; i--) {
-    if (i === 0) {
-      if (e.key === "w") {
-        if (player.y[0] === 0) {
-          player.alive = false;
-        } else {
-          player.y[0]--;
-        }
-      } else if (e.key === "s") {
-        if (player.y[0] === 9) {
-          player.alive = false;
-        } else {
-          player.y[0]++;
-        }
-      } else if (e.key === "a") {
-        if (player.x[0] === 0) {
-          player.alive = false;
-        } else {
-          player.x[0]--;
-        }
-      } else if (e.key === "d") {
-        if (player.x[0] === 9) {
-          player.alive = false;
-        } else {
-          player.x[0]++;
-        }
-      }
-    } else if (i > 0) {
-      if (
-        (e.key === "w" && player.y[0] === 0) ||
-        (e.key === "s" && player.y[0] === 9) ||
-        (e.key === "a" && player.x[0] === 0) ||
-        (e.key === "d" && player.x[0] === 9)
-      ) {
-      } else {
-        player.x[i] = player.x[i - 1];
-        player.y[i] = player.y[i - 1];
-      }
+placeItem(x, y, type) { 
+  document.getElementById(`x${x}y${y}`).classList.add(type);
+}
+removeItem(x, y, type) {
+  document.getElementById(`x${x}y${y}`).classList.remove(type);
+}
+const board = {
+  height: 10,
+  width: 10
+}
+const collisionTypes = Object.freeze({
+  WALLHIT: 'wallHit',
+  POINT: 'point',
+  SELFCOLLISION: 'selfCollision'
+})
+const collisionActions = Object.freeze({
+  GETPOINT: [collisionTypes.POINT],
+  ENDGAME: [collisionTypes.WALLHIT, collisionTypes.SELFCOLLISION],
+  MOVE: []
+})
+const getCollisionAction = function(collisionType, collisionActions) {
+  for(let action in collisionActions) {
+    if(collisionActions[action].includes(collisionType)) {
+      return action;
     }
   }
-  for (let i = 0; i < length; i++) {
-    if (player.x[0] === player.x[i] && player.y[0] === player.y[i] && i > 2) {
-      player.alive = false;
-    }
-    if(pointCoordinates[0] === player.x[i] && pointCoordinates[1] === player.y[i] && i > 0) {
-      placePoint(squares);
-    }
-  }
-  console.log(player.x, player.y);
-
-  if (!player.alive) {
-    document.removeEventListener("keydown", move);
-    labelGameOver.style.display = "flex";
-  }
-  console.log(player.alive);
-  player.placePlayer();
-  if (
-    player.x[0] === pointCoordinates[0] &&
-    player.y[0] === pointCoordinates[1]
-  ) {
-    pointScored();
-    placePoint(squares);
-  }
-};
-
+  return Object.key(collisionActions.MOVE);
+}
 const player = {
-  x: [Math.trunc(Math.random() * 10)],
-  y: [Math.trunc(Math.random() * 10)],
-  points: 0,
-  alive: true,
-  placePlayer: function () {
-    squares.forEach((square) => {
-      square.querySelector("item").classList.contains("player")
-        ? square.querySelector("item").classList.remove("player")
-        : "";
-    });
-    for (let i = 0; i < length; i++) {
-      squares[this.y[i] * 10 + this.x[i]]
-        .querySelector("item")
-        .classList.add("player");
-    }
+  coordinates: [{
+    x: Math.random(),
+    y: Math.random()
+  }],
+  isAlive: true, 
+  placePlayerOnStart: function(board) {
+    randomPosition()
+    placeItem(x[0], y[0], 'player');
   },
-};
-placePoint(squares);
-player.placePlayer();
-document.addEventListener("keydown", move);
+  movePlayer: function(newHeadCoordinates) {
+    removeItem(x[coordinates.length - 1], y[coordinates.length - 1], 'player')
+    placeItem(newHeadCoordinates.x, newHeadCoordinates.y, 'player');
+    const action = this.detectAction(board, newHeadCoordinates, pointCoordinates);
+    // Wywołanie metody obsługującej daną akcję
+    // Aktualizacja tablicy
+      },
+  detectAction: function(board, newHeadCoordinates, pointCoordinates) {
+    const isWallCollision = wallCollision();
+    const isPointCollision = pointCollision();
+    const isSelfCollision = selfCollision();
+    if(!isWallCollision) {
+      return getCollisionAction(isWallCollision, collisionActions)
+    }
+    if(isPointCollision) {
+      return getCollisionAction(isPointCollision, collisionActions);
+    }
+    if(isSelfCollision) {
+      return getCollisionAction(isSelfCollision, collisionActions);
+    }
+    return Object.key();
+  },
+  moveUp: function() {
+    newHeadCoordinates.y = y[0]--;
+    detectCollision(newHeadCoordinates);
+  },
+  wallCollision: function(board, newHeadCoordinates) {
+    if(
+      newHeadCoordinates.x > board.height - 1 || 
+      newHeadCoordinates.x < 0 || 
+      newHeadCoordinates.y > board.height - 1 || 
+      newHeadCoordinates.y < 0
+    ) {
+      return collisionTypes.WALLHIT;
+    }
+    return false;
+  },
+  pointCollision: function(newHeadCoordinates, pointCoordinates) {
+    if(
+      newHeadCoordinates.x === pointCoordinates.x && 
+      newHeadCoordinates.y === pointCoordinates.y
+    ) {
+      return collisionTypes.POINT;
+    }
+    return false;
+  },
+  selfCollision: function(newHeadCoordinates) {
+    const coordinateExists = (player.coordinates.filter((coor, i) => {
+      return newHeadCoordinates.x === coor.x && newHeadCoordinates.y === coor.y 
+    }).length > 0);
+    if(coordinateExists) {
+      return collisionTypes.SELFCOLLISION;
+    }
+    return false;
+  }  
+}
+document.eventlistener('keydown', function(e){
+  if(e.key === 'w') {
+    player.moveUp();
+  }
+});
+ 
+ const handlers = {
+  UP: handleUp,
+  DOWN: handleDown,
+
+ }
+
+setInterval(movePlayer, 2000)
