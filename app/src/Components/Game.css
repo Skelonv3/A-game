@@ -1,0 +1,31 @@
+.square {
+    height: 1rem;
+    width: 1rem;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .item {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: white;
+  }
+  .board {
+    padding: 100px;
+    justify-content: center;
+    display: grid;
+    background: #fff
+
+  }
+  .row {
+    display: flex;
+  }
+  .player {
+    background-color: rgb(248, 234, 39);
+  }
+  .point {
+    background-color: rgb(6, 173, 6);
+  }
