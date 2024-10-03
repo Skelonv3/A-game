@@ -14,7 +14,6 @@
     background-color: white;
   }
   .board {
-    padding: 100px;
     justify-content: center;
     display: grid;
     background: #fff
@@ -28,4 +27,14 @@
   }
   .point {
     background-color: rgb(6, 173, 6);
+  }
+  .label-game_over {
+    display: none;
+    justify-content: center;
+    font-weight: bold;
+  }
+  .label-points {
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
   }
