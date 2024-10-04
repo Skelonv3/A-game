@@ -29,7 +29,6 @@
     background-color: rgb(6, 173, 6);
   }
   .label-game_over {
-    display: none;
     justify-content: center;
     font-weight: bold;
   }

@@ -19,9 +19,24 @@ function Game({ board, playerCoordinates }) {
         ...generateRandomPosition(board, player.coordinates ?? [], {})
     });
 
+    const detectEndGame = (newHeadCoordinates) => {
+        const colisionWithBody = player.coordinates.some(
+            (coor) => coor.x === newHeadCoordinates.x && coor.y === newHeadCoordinates.y
+        );
+
+        return (
+            colisionWithBody
+            || (
+                newHeadCoordinates.x > board.width - 1
+                || newHeadCoordinates.x < 0
+                || newHeadCoordinates.y > board.height - 1
+                || newHeadCoordinates.y < 0
+            )
+        )
+    }
+
     const updatePlayerCoordinates = (direction, player1) => {
         const newHeadCoordinates = { ...player1.coordinates[0] };
-
         if (direction === 'UP') {
             newHeadCoordinates.y -= 1;
         } else if (direction === 'DOWN') {
@@ -31,84 +46,82 @@ function Game({ board, playerCoordinates }) {
         } else if (direction === 'LEFT') {
             newHeadCoordinates.x -= 1;
         }
-        const coordinateExists =
-            player1.coordinates.some((coor) => coor.x === newHeadCoordinates.x && coor.y === newHeadCoordinates.y);
 
-        if (coordinateExists || (newHeadCoordinates.x > 9 || newHeadCoordinates.x < 0 || newHeadCoordinates.y > 9 || newHeadCoordinates.y < 0)) {
+        console.log(newHeadCoordinates);
+        if (detectEndGame(newHeadCoordinates)) {
             console.log('KONIEC');
             setPlayer((oldPlayer) => ({
                 ...oldPlayer,
                 isAlive: false
-            }));
-            return player1;
+            }), newPlayer => console.log(newPlayer));
+            console.log(player1.isAlive);
+            return player1.coordinates;
         }
-
-        const newCoordinates = [newHeadCoordinates, ...player1.coordinates.slice(0, -1)];
-        return { ...player1, coordinates: newCoordinates };
+        const newCoordinates = [newHeadCoordinates, ...player1.coordinates.slice(1, -1)];
+        console.log(newCoordinates);
+        return newCoordinates;
     };
 
     const moveUp = () => setPlayer((oldPlayer) => ({
         ...oldPlayer,
-        coordinates: updatePlayerCoordinates('UP', oldPlayer).coordinates
+        coordinates: updatePlayerCoordinates('UP', oldPlayer)
     }));
+
     const moveDown = () => setPlayer((oldPlayer) => ({
         ...oldPlayer,
-        coordinates: updatePlayerCoordinates('DOWN', oldPlayer).coordinates
+        coordinates: updatePlayerCoordinates('DOWN', oldPlayer)
     }));
+
     const moveRight = () => setPlayer((oldPlayer) => ({
         ...oldPlayer,
-        coordinates: updatePlayerCoordinates('RIGHT', oldPlayer).coordinates
+        coordinates: updatePlayerCoordinates('RIGHT', oldPlayer)
     }));
+
     const moveLeft = () => setPlayer((oldPlayer) => ({
         ...oldPlayer,
-        coordinates: updatePlayerCoordinates('LEFT', oldPlayer).coordinates
+        coordinates: updatePlayerCoordinates('LEFT', oldPlayer)
     }));
 
+    const move = {
+        'w': moveUp,
+        's': moveDown,
+        'd': moveRight,
+        'a': moveLeft
+    }
+
     const handleMovement = (e) => {
+        console.log(player.isAlive);
         if (!player.isAlive) {
+            console.log('GAME OVER');
             return;
         }
-
-        if (e.key === 'w') {
-            moveUp();
-        } else if (e.key === 's') {
-            moveDown();
-        } else if (e.key === 'd') {
-            moveRight();
-        } else if (e.key === 'a') {
-            moveLeft();
-        }
+        move[e.key]();
     };
 
     const playerPos = player.coordinates[0];
     if (playerPos.x === point.x && playerPos.y === point.y) {
         const newPoint = generateRandomPosition(board, player.coordinates, point);
         setPoint(newPoint);
-        player.points++;
-        document.querySelector('.label-points').textContent = `Points: ${player.points}`
         setPlayer((oldPlayer) => {
             const tail = oldPlayer.coordinates[oldPlayer.coordinates.length - 1];
             return {
                 ...oldPlayer,
                 coordinates: [...oldPlayer.coordinates, tail],
-                points: oldPlayer.points,
+                points: ++oldPlayer.points,
                 isAlive: true
             };
         });
     }
-    if(!player.isAlive) {
-        document.querySelector('.label-game_over').style.display = 'flex';
-    }
     useEffect(() => {
         window.addEventListener('keydown', handleMovement);
         return () => window.removeEventListener('keydown', handleMovement);
-    }, [player.isAlive]);
+    }, []);
 
     return (
         <>
-            <div className='label-points'>Points: 0</div>
-            <Board width={board.width} height={board.height} playerCoordinates={player.coordinates} point={point}/>
-            <div className='label-game_over'> GAME OVER </div>
+            <div className='label-points'>Points: {player.points}</div>
+            <Board width={board.width} height={board.height} playerCoordinates={player.coordinates} point={point} />
+            <div className='label-game_over' style={{ display: `${player.isAlive ? 'none' : 'flex'}` }}> GAME OVER </div>
         </>
     );
 }
