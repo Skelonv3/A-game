@@ -35,8 +35,8 @@ function Game({ board, playerCoordinates }) {
         )
     }
 
-    const updatePlayerCoordinates = (direction) => {
-        const newHeadCoordinates = { ...player.coordinates[0] };
+    const updatePlayerCoordinates = (direction, oldPlayerData) => {
+        const newHeadCoordinates = { ...oldPlayerData.coordinates[0] };
 
         if (direction === 'UP') {
             newHeadCoordinates.y -= 1;
@@ -54,11 +54,11 @@ function Game({ board, playerCoordinates }) {
                 ...oldPlayer,
                 isAlive: false
             }));
-            return player
+            return oldPlayerData
         }
 
-        const newCoordinates = [newHeadCoordinates, ...player.coordinates.slice(0, -1)];
-        return { ...player, coordinates: newCoordinates };
+        const newCoordinates = [newHeadCoordinates, ...oldPlayerData.coordinates.slice(0, -1)];
+        return { ...oldPlayerData, coordinates: newCoordinates };
     };
 
     const moveUp = () => setPlayer((oldPlayer) => ({
@@ -94,7 +94,7 @@ function Game({ board, playerCoordinates }) {
         }
 
         // extract function from object
-        move[e.key]();
+        move[e.key](player);
 
         // instead of this multiple if statements
         // if (e.key === 'w') {
