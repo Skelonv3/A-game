@@ -20,7 +20,7 @@ function Game({ board, playerCoordinates }) {
     });
 
     const detectEndGame = (newHeadCoordinates) => {
-        const colisionWithBody = player.coordinates.some(
+        const colisionWithBody = player.coordinates.length > 1 && player.coordinates.some(
             (coor) => coor.x === newHeadCoordinates.x && coor.y === newHeadCoordinates.y
         );
 
@@ -53,11 +53,10 @@ function Game({ board, playerCoordinates }) {
             setPlayer((oldPlayer) => ({
                 ...oldPlayer,
                 isAlive: false
-            }), newPlayer => console.log(newPlayer));
-            console.log(player1.isAlive);
+            }));
             return player1.coordinates;
         }
-        const newCoordinates = [newHeadCoordinates, ...player1.coordinates.slice(1, -1)];
+        const newCoordinates = [newHeadCoordinates, ...player1.coordinates.slice(0, -1)];
         console.log(newCoordinates);
         return newCoordinates;
     };
@@ -95,6 +94,7 @@ function Game({ board, playerCoordinates }) {
             console.log('GAME OVER');
             return;
         }
+        // protect from using not allowed keys (e.g. 'z')
         move[e.key]();
     };
 
