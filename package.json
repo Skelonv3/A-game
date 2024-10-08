@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "tailwindcss": "^3.4.13"
-  },
-  "dependencies": {
-    "formik": "^2.4.6"
-  }
-}
