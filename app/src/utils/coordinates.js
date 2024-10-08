@@ -1,4 +1,5 @@
 const generateRandomPosition = function(board, playerCoordinates, pointCoordinates) {
+  console.log('koordynaty', playerCoordinates);
     const occupiedPositions = [...playerCoordinates, pointCoordinates]
     let x, y;
     do {

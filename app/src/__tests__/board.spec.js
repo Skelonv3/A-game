@@ -29,17 +29,17 @@ test('1) player moves up on w click', async () => {
 
   //then
   await waitFor(() => {
-    expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('player');
+    expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('bg-yellow');
   });
 
   await waitFor(() => {
-    expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y - 1}`)).toHaveClass('player');
+    expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y - 1}`)).toHaveClass('bg-yellow');
   });
 
 //then
 
-await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('player'))
-await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${(startingPosition.y - 1)}`)).toHaveClass('player'))
+await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('bg-yellow'))
+await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${(startingPosition.y - 1)}`)).toHaveClass('bg-yellow'))
 })
 
 test('1) player moves down on s click', async () => {
@@ -59,8 +59,8 @@ test('1) player moves down on s click', async () => {
 
   //then
 
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('player'))
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${(startingPosition.y + 1)}`)).toHaveClass('player'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('bg-yellow'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${(startingPosition.y + 1)}`)).toHaveClass('bg-yellow'))
 })
 
 test('1) player moves rught on d click', async () => {
@@ -80,8 +80,8 @@ test('1) player moves rught on d click', async () => {
 
   //then
 
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('player'))
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x + 1}y${(startingPosition.y)}`)).toHaveClass('player'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('bg-yellow'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x + 1}y${(startingPosition.y)}`)).toHaveClass('bg-yellow'))
 })
 
 test('1) player moves left on a click', async () => {
@@ -101,8 +101,8 @@ test('1) player moves left on a click', async () => {
 
   //then
 
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('player'))
-  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x - 1}y${(startingPosition.y)}`)).toHaveClass('player'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y}`)).not.toHaveClass('bg-yellow'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x - 1}y${(startingPosition.y)}`)).toHaveClass('bg-yellow'))
 })
 
 test("player cant go beyond the board's upper edge", async () => {
@@ -110,7 +110,7 @@ test("player cant go beyond the board's upper edge", async () => {
   const height = 10;
   render(<Board width={width} height={height} playerCoordinates={[{x: 5, y: 0}]} point={{x: 2, y: 2}} />)
   fireEvent.keyDown(document, { key: 'w', code: 'keyW' });
-  await waitFor(() => expect(screen.getByTitle(`x${5}y${0}`)).toHaveClass('player'));
+  await waitFor(() => expect(screen.getByTitle(`x${5}y${0}`)).toHaveClass('bg-yellow'));
 })
 
 test("player cant go beyond the board's bottom edge", async () => {
@@ -118,7 +118,7 @@ test("player cant go beyond the board's bottom edge", async () => {
   const height = 10;
   render(<Board width={width} height={height} playerCoordinates={[{x: 5, y: 9}]} point={{x: 2, y: 2}} />)
   fireEvent.keyDown(document, { key: 's', code: 'keyS' });
-  await waitFor(() => expect(screen.getByTitle(`x${5}y${9}`)).toHaveClass('player'));
+  await waitFor(() => expect(screen.getByTitle(`x${5}y${9}`)).toHaveClass('bg-yellow'));
 })
 
 test("player cant go beyond the board's right edge", async () => {
@@ -126,7 +126,7 @@ test("player cant go beyond the board's right edge", async () => {
   const height = 10;
   render(<Board width={width} height={height} playerCoordinates={[{x: 9, y: 5}]} point={{x: 2, y: 2}} />)
   fireEvent.keyDown(document, { key: 'd', code: 'keyD' });
-  await waitFor(() => expect(screen.getByTitle(`x${9}y${5}`)).toHaveClass('player'));
+  await waitFor(() => expect(screen.getByTitle(`x${9}y${5}`)).toHaveClass('bg-yellow'));
 })
 
 test("player cant go beyond the board's left edge", async () => {
@@ -134,5 +134,17 @@ test("player cant go beyond the board's left edge", async () => {
   const height = 10;
   render(<Board width={width} height={height} playerCoordinates={[{x: 0, y: 5}]} point={{x: 2, y: 2}} />)
   fireEvent.keyDown(document, { key: 'a', code: 'keyA' });
-  await waitFor(() => expect(screen.getByTitle(`x${0}y${5}`)).toHaveClass('player'));
+  await waitFor(() => expect(screen.getByTitle(`x${0}y${5}`)).toHaveClass('bg-yellow'));
+})
+
+test("player can go back to his previous position without the game ending when its length is 1", async () => {
+  const width = 10;
+  const height = 10;
+  const startingPosition = { x: 5, y: 5 }
+  render(<Board width={width} height={height} playerCoordinates={[{x: startingPosition.x, y: startingPosition.y}]} point={{x: 2, y: 2}} />)
+  fireEvent.keyDown(document, { key: 'w', code: 'keyW' });
+  fireEvent.keyDown(document, { key: 's', code: 'keyS' });
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${startingPosition.y - 1}`)).not.toHaveClass('bg-yellow'))
+  await waitFor(() => expect(screen.getByTitle(`x${startingPosition.x}y${(startingPosition.y)}`)).toHaveClass('bg-yellow'))
+  
 })
