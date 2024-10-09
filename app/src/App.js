@@ -1,58 +1,62 @@
-import { Formik, Form, Field } from 'formik';
-import './App.css';
-import Game from './Components/Game.js'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-const board = {
-  width: 10,
-  height: 10
-}
+import Game from './Components/Game.js'
+import StartGameForm from './Components/StartGameForm.js';
+import EndGame from './Components/EndGame.js';
+
+import './App.css';
+import { generateRandomPosition } from './utils/coordinates.js';
+
+
+// TODO :: user must define in StartGame form size of board - can be predefined
+// ex. 10x10, 20x20, 30x30, 40x60, ....
 
 function App() {
-  const [gameActive, setGameActive] = useState(false)
-  const [playerData, setplayerData] = useState({
-    name: '',
-    score: 0
+
+  const [board, setBoard] = useState({
+    width: 0,
+    height: 0
   })
-  // const playerDataToStore = JSON.stringify(playerData)
-  // localStorage.setItem('player', playerDataToStore);
-  const handleStartGame = (e) => {
-    e.preventDefault()
-    setGameActive(true)
-  }
-  useEffect(() => {
-    window.addEventListener('keydown', handleStartGame);
-    return () => window.removeEventListener('keydown', handleStartGame);
-  }, [])
-  const HighscoreForm = () => (
-    <Formik
-      initialValues={{
-        name: ''
-      }}
-      onSubmit={
-        values => {
-          setplayerData((oldPlayerData) => ({
-            ...oldPlayerData,
-            name: values.name
-          }))
-        }}
-    >
-      <Form>
-        <label htmlFor="name">Name</label>
-        <Field id='name' name='name' />
-        <button type='submit'>Submit</button>
-      </Form>
-    </Formik >
-  );
+
+  const [gameStatus, setGameStatus] = useState('initial') // initial, playing, ended
+
+  const [playerData, setPlayerData] = useState({
+    name: '',
+    points: 0,
+    isAlive: true,
+    direction: 'RIGHT',
+    coordinates: [
+      generateRandomPosition(board, [], {})
+    ],
+  })
+  const [leaderboard, setLeaderboard] = useState(() => {
+    const leaderboard = localStorage.getItem('leaderboard')
+    return leaderboard ? JSON.parse(leaderboard) : []
+  })
+  const updateLeaderboard = useCallback((playerData) => {
+    let newLeaderboard = [];
+    const indexOfCurrentName = leaderboard.findIndex(player => player.name === playerData.name);
+    if (leaderboard.some(player => player.name === playerData.name)) {
+      if (leaderboard[indexOfCurrentName].points <= playerData.points) {
+        leaderboard[indexOfCurrentName].points = playerData.points;
+        
+      }
+      newLeaderboard = [...leaderboard];
+    } else {
+      newLeaderboard = [...leaderboard, { name: playerData.name, points: playerData.points }]
+    }
+
+    localStorage.setItem('leaderboard', JSON.stringify(newLeaderboard))
+    setLeaderboard(newLeaderboard);
+  }, [leaderboard])
+
   return (
-      <HighscoreForm />
+    <>
+      {gameStatus === 'initial' && <StartGameForm setPlayerData={setPlayerData} setGameStatus={setGameStatus} leaderboard={leaderboard} setBoard={setBoard} />}
+      {gameStatus === 'playing' && <Game board={board} player={{ player: playerData, setPlayer: setPlayerData }} gameStatus={gameStatus} setGameStatus={setGameStatus} />}
+      {gameStatus === 'ended' && <EndGame setGameStatus={setGameStatus} gameStatus={gameStatus} setPlayerData={setPlayerData} playerData={playerData} board={board} leaderboard={leaderboard} updateLeaderboard={updateLeaderboard} />}
+    </>
   )
-  // return (
-  //   <>
-  //     {!gameActive && <div className='flex justify-center'>Naciśnij dowolny klawisz</div>}
-  //     <Game board={board} playerCoordinates={null} gameActive={gameActive} />
-  //   </>
-  // );
 }
 
 export default App;
