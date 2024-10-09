@@ -7,12 +7,23 @@ import './App.css';
 import { generateRandomPosition } from './utils/coordinates.js';
 import Leaderboard from './Components/Leaderboard.js';
 
+
+// TODO :: user must define in StartGame form size of board - can be predefined
+// ex. 10x10, 20x20, 30x30, 40x60, ....
 const board = {
   width: 10,
   height: 10
 }
 
 function App() {
+
+  // const [game, setGame] = useState({
+  //   board: {
+  //     width: 10,
+  //     height: 10
+  //   },
+  //   status: 'initial'
+  // })
 
   const [gameStatus, setGameStatus] = useState('initial') // initial, playing, ended
 
@@ -31,6 +42,7 @@ function App() {
     return leaderboard ? JSON.parse(leaderboard) : []
   })
 
+  // TODO :: move to component EndGame
   const handleRestart = () => {
     setGameStatus('initial')
     setPlayerData({
@@ -44,6 +56,7 @@ function App() {
     })
   }
 
+  // TODO :: move to component EndGame
   useEffect(() => {
     if (gameStatus === 'ended') {
       // TODO :: update the leaderboard - update player score if it's higher, ex. 
@@ -63,7 +76,7 @@ function App() {
       {gameStatus === 'initial' && <StartGameForm setPlayerData={setPlayerData} setGameStatus={setGameStatus} leaderboard={leaderboard} />}
       {gameStatus === 'playing' && <Game board={board} player={{ player: playerData, setPlayer: setPlayerData }} gameStatus={gameStatus} setGameStatus={setGameStatus} />}
       {
-        // later add a component for game over which will show the score and a button to restart the game
+        // THIS should be EndGame component 
         gameStatus === 'ended' && <>
           <h1>Game Over</h1>
           <p>{playerData.name} score: {playerData.points}</p>
