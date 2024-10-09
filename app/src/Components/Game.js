@@ -10,18 +10,24 @@ const eventKeyToDirection = {
     'a': 'LEFT'
 }
 
-function Game({ board, playerCoordinates, gameActive }) {
+function Game({
+    board,
+    gameStatus,
+    setGameStatus,
+    player: { player, setPlayer }
+}) {
 
-    const [player, setPlayer] = useState({
-        coordinates: playerCoordinates
-            ? playerCoordinates
-            : [
-                generateRandomPosition(board, [], {})
-            ],
-        points: 0,
-        isAlive: true,
-        direction: 'RIGHT'
-    });
+    // moved to props, so it's easier to use those data in other components and also in tests
+    // const [player, setPlayer] = useState({
+    //     coordinates: playerCoordinates
+    //         ? playerCoordinates
+    //         : [
+    //             generateRandomPosition(board, [], {})
+    //         ],
+    //     points: score,
+    //     isAlive: true,
+    //     direction: 'RIGHT'
+    // });
 
     const [point, setPoint] = useState({
         ...generateRandomPosition(board, player.coordinates ?? [], {})
@@ -29,7 +35,7 @@ function Game({ board, playerCoordinates, gameActive }) {
 
     const intervalRef = useRef();
     const detectEndGame = (newHeadCoordinates, player1) => {
-        console.log(player1.coordinates);
+
         const colisionWithBody = player1.coordinates.length > 1 && player1.coordinates.some(
             (coor) => coor.x === newHeadCoordinates.x && coor.y === newHeadCoordinates.y
         );
@@ -47,9 +53,11 @@ function Game({ board, playerCoordinates, gameActive }) {
 
     const updatePlayerCoordinates = () => {
         setPlayer((oldPlayer) => {
+
             const headCoordinates = {
                 ...oldPlayer.coordinates[0]
             }
+
             if (oldPlayer.direction === 'UP') {
                 headCoordinates.y -= 1;
             } else if (oldPlayer.direction === 'DOWN') {
@@ -60,14 +68,16 @@ function Game({ board, playerCoordinates, gameActive }) {
                 console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa');
                 headCoordinates.x -= 1;
             }
-            
+
             if (detectEndGame(headCoordinates, oldPlayer)) {
-                clearInterval(intervalRef.current)
+                setGameStatus('ended');
+                // not neccessary because above state will change and component will be unmounted
                 return {
                     ...oldPlayer,
                     isAlive: false
                 }
             }
+
             const newCoordinates = [headCoordinates, ...oldPlayer.coordinates.slice(0, -1)];
             return {
                 ...oldPlayer,
@@ -127,22 +137,33 @@ function Game({ board, playerCoordinates, gameActive }) {
             };
         });
     }
+
     useEffect(() => {
         window.addEventListener('keydown', handleMovement);
         return () => window.removeEventListener('keydown', handleMovement);
     }, []);
+
     useEffect(() => {
-        console.log(gameActive);
-        if (!gameActive) {
-            clearInterval(intervalRef.current);
-            return;
-        }
+        // handling end game is in movement because when colision is detected then component will be unmounted
+        // console.log(gameStatus);
+        // if (!gameStatus === 'ended') {
+
+        //     setPlayerData({
+        //         name: name,
+        //         score: player.points
+        //     });
+        //     clearInterval(intervalRef.current);
+        // }
+
         intervalRef.current = setInterval(updatePlayerCoordinates, 1000);
+
+        // when component is unmounted then this will be triggered and interval will be cleared
         return () => {
             clearInterval(intervalRef.current);
             intervalRef.current = undefined;
         }
-    }, [gameActive])
+    }, [])
+
     return (
         <>
             <div className='flex justify-center font-bold'>Points: {player.points}</div>
