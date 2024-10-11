@@ -100,7 +100,6 @@ function Game({
         }))
     }
 
-
     const handleMovement = (e) => {
         updatePlayerDirection(e.key);
     };
@@ -114,13 +113,11 @@ function Game({
 
         intervalRef.current = setInterval(updatePlayerCoordinates, 1000);
 
-        // when component is unmounted then this will be triggered and interval will be cleared
         return () => {
             clearInterval(intervalRef.current);
             intervalRef.current = undefined;
         }
     }, [])
-
 
     return (
         <>

@@ -6,10 +6,23 @@ module.exports = {
   ],
   theme: {
     colors: {
-      'green': '#2bc52b',
-      'yellow': '#f8ea27',
+      'black': '#000000',
+      'white': '#ffff',
+      'light-green': '#287b3d',
+      'dark-green': '#17615b',
+      'yellow': '#fdc401',
+      'light-gray': '#e6e3d2',
+      'red': '#cc0000'
     },
-    extend: {},
+    extend: {
+      width: {
+        'form': '183px',
+        'leaderboard': '139px'
+      },
+      height: {
+        'form': '26px'
+      }
+    },
   },
   plugins: [],
 }

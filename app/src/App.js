@@ -7,10 +7,6 @@ import EndGame from './Components/EndGame.js';
 import './App.css';
 import { generateRandomPosition } from './utils/coordinates.js';
 
-
-// TODO :: user must define in StartGame form size of board - can be predefined
-// ex. 10x10, 20x20, 30x30, 40x60, ....
-
 function App() {
 
   const [board, setBoard] = useState({
@@ -18,7 +14,7 @@ function App() {
     height: 0
   })
 
-  const [gameStatus, setGameStatus] = useState('initial') // initial, playing, ended
+  const [gameStatus, setGameStatus] = useState('initial') 
 
   const [playerData, setPlayerData] = useState({
     name: '',
@@ -39,7 +35,7 @@ function App() {
     if (leaderboard.some(player => player.name === playerData.name)) {
       if (leaderboard[indexOfCurrentName].points <= playerData.points) {
         leaderboard[indexOfCurrentName].points = playerData.points;
-        
+
       }
       newLeaderboard = [...leaderboard];
     } else {

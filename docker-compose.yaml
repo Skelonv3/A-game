@@ -1,4 +1,16 @@
 services:
+
+  db:
+    image: postgres
+    container_name: snakedb
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: game123
+      POSTGRES_USER: game
+      POSTGRES_DB: snake
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
+ 
   app:
     image: node:22
     container_name: snake
@@ -10,3 +22,17 @@ services:
     ports:
       - "3000:3000"
       - "9229:9229"
+
+  server:
+    build: 
+      context: .
+      dockerfile: dockerfile.server
+    # image: node:22
+    container_name: snake-server
+    volumes:
+      - .:/app
+    working_dir: /app
+    user: "${USER_ID}:${GROUP_ID}"
+    tty: true
+    ports:
+      - "4000:3000"
